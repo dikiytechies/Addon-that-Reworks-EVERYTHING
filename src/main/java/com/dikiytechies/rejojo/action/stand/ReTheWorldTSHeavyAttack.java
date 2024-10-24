@@ -18,6 +18,7 @@ import com.github.standobyte.jojo.entity.stand.StandEntityTask;
 import com.github.standobyte.jojo.entity.stand.StandPose;
 import com.github.standobyte.jojo.entity.stand.StandStatFormulas;
 import com.github.standobyte.jojo.init.ModSounds;
+import com.github.standobyte.jojo.init.power.stand.ModStandsInit;
 import com.github.standobyte.jojo.network.PacketManager;
 import com.github.standobyte.jojo.network.packets.fromserver.TrDirectEntityPosPacket;
 import com.github.standobyte.jojo.power.impl.stand.IStandPower;
@@ -55,6 +56,18 @@ public class ReTheWorldTSHeavyAttack extends StandEntityAction implements IHasSt
         this(builder, theWorldTimeStopBlink);
     }
 
+    public ReTheWorldTSHeavyAttack(StandEntityAction.Builder builder,
+                                   Supplier<ReTimeStopInstant> theWorldTimeStopBlink) {
+        super(builder);
+        this.theWorldTimeStopBlink = theWorldTimeStopBlink;
+    }
+
+    @Override
+    public boolean isUnlocked(IStandPower power) {
+        if (power.getResolveLevel() >= 3) return ModStandsReInit.RE_THE_WORLD_TIME_STOP.get().isUnlocked(power);
+        return false;
+    }
+
     @Nullable
     @Override
     protected Action<IStandPower> replaceAction(IStandPower power, ActionTarget target) {
@@ -66,13 +79,6 @@ public class ReTheWorldTSHeavyAttack extends StandEntityAction implements IHasSt
         }
         return super.replaceAction(power, target);
     }
-
-    public ReTheWorldTSHeavyAttack(StandEntityAction.Builder builder,
-                                   Supplier<ReTimeStopInstant> theWorldTimeStopBlink) {
-        super(builder);
-        this.theWorldTimeStopBlink = theWorldTimeStopBlink;
-    }
-
     @Override
     protected boolean canClickDuringTask(StandEntityAction clickedAction, IStandPower standPower, StandEntity standEntity, StandEntityTask task) {
         return clickedAction != this || isChainable(standPower, standEntity) || clickedAction == ModStandsReInit.THE_WORLD_TS_BLINK_RECOVERY.get();
@@ -193,7 +199,6 @@ public class ReTheWorldTSHeavyAttack extends StandEntityAction implements IHasSt
     public void standPerform(World world, StandEntity standEntity, IStandPower userPower, StandEntityTask task) {
         standEntity.punch(task, this, task.getTarget());
         if (!world.isClientSide()) {
-            System.out.println(JojoModUtil.makeTextureLocation("action", STAR_PLATINUM_TIME_STOP.get().getRegistryName().getNamespace(), this.getRegistryName().getPath()));
             userPower.getUser().getCapability(LivingUtilCapProvider.CAPABILITY).ifPresent(cap -> cap.hasUsedTimeStopToday = true);
         }
     }
@@ -255,9 +260,9 @@ public class ReTheWorldTSHeavyAttack extends StandEntityAction implements IHasSt
     @Override
     public ResourceLocation getIconTexturePath(@Nullable IStandPower power) {
         if (power != null && doesBackshot(power)) {
-            return JojoModUtil.makeTextureLocation("action", STAR_PLATINUM_TIME_STOP.get().getRegistryName().getNamespace(), this.getRegistryName().getPath() + "_back");
+            return JojoModUtil.makeTextureLocation("action", this.getRegistryName().getNamespace(), this.getRegistryName().getPath() + "_back");
         } else {
-            return JojoModUtil.makeTextureLocation("action", STAR_PLATINUM_TIME_STOP.get().getRegistryName().getNamespace(), this.getRegistryName().getPath());
+            return JojoModUtil.makeTextureLocation("action", this.getRegistryName().getNamespace(), this.getRegistryName().getPath());
         }
     }
 

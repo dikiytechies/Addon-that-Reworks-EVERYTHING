@@ -32,11 +32,6 @@ public class ReTimeStopInstant extends TimeStopInstant {
     }
 
     @Override
-    public ResourceLocation getIconTexturePath(@Nullable IStandPower power) {
-        return JojoModUtil.makeTextureLocation("action", STAR_PLATINUM_TIME_STOP.get().getRegistryName().getNamespace(), this.getRegistryName().getPath());
-    }
-
-    @Override
     public IFormattableTextComponent getTranslatedName(IStandPower power, String key) {
         String[] keys = key.split("rejojo");
         String newKey = keys[0] + "jojo" + keys[1];

@@ -46,7 +46,6 @@ public class GameplayEventHandler {
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void tick(LivingEvent.LivingUpdateEvent event) {
         getTimeStop(event);
-        getTimeStopRelatedAbilities(event);
         addTWResolveInTS(event);
     }
 
@@ -68,7 +67,7 @@ public class GameplayEventHandler {
                         for (Entity entity : entityLiving.level.getEntities(null, entityLiving.getBoundingBox().inflate(5))) {
                             if (entity instanceof ProjectileEntity && (Math.abs(entity.getDeltaMovement().x) >= 0.6F || Math.abs(entity.getDeltaMovement().z) >= 0.6F) && (((ProjectileEntity) entity).getOwner() != entityLiving && ((ProjectileEntity) entity).getOwner() != power.getStandManifestation())) {
                                 if (entity instanceof AbstractArrowEntity) {
-                                    if (entityLiving.getHealth() <= ((AbstractArrowEntity) entity).getBaseDamage() * 1.2) {
+                                    if (entityLiving.getHealth() <= ((AbstractArrowEntity) entity).getBaseDamage() * 2.2) {
                                         boolean isInGround = entity.serializeNBT().getBoolean("inGround");
                                         if (isInGround) return;
                                     } else return;
@@ -111,22 +110,6 @@ public class GameplayEventHandler {
             }
         }
     }
-    private static void getTimeStopRelatedAbilities(LivingEvent.LivingUpdateEvent event) {
-        LivingEntity entityLiving = event.getEntityLiving();
-        IStandPower power = IStandPower.getStandPowerOptional(entityLiving).orElse(null);
-        if (!event.getEntityLiving().level.isClientSide()) {
-            if (IStandPower.getStandPowerOptional(entityLiving).isPresent()) {
-                Iterable<StandAction> actions = power.getAllUnlockedActions();
-                for (StandAction action : actions) {
-                    if (action == ModStandsReInit.RE_THE_WORLD_TIME_STOP.get() && power.getResolveLevel() >= 3) {
-                        power.unlockAction(ModStandsReInit.RE_THE_WORLD_TS_PUNCH.get());
-                        if (power.getResolveLevel() >= 4)
-                            power.unlockAction(ModStandsReInit.THE_WORLD_TS_BLINK_RECOVERY.get());
-                    }
-                }
-            }
-        }
-    }
     private static void addTWResolveInTS(LivingEvent.LivingUpdateEvent event) {
         LivingEntity entityLiving = event.getEntityLiving();
         if (!entityLiving.level.isClientSide()) {
@@ -161,6 +144,7 @@ public class GameplayEventHandler {
     }
     private static void giveResolveFromTSPosition(LivingEntity living, Effect effect, int ticksLeft, boolean expired) {
         if ((TimeStopHandler.isTimeStopped(living.level, living.blockPosition()) || !expired) && effect == ModStatusEffects.TIME_STOP.get() && IStandPower.getStandPowerOptional(living).isPresent()) {
+            if (TheWorldTimeStop.getTimeStopTicks(IStandPower.getStandPowerOptional(living).orElse(null), ModStandsReInit.RE_THE_WORLD_TIME_STOP.get()) < 50) return;
             int ticksLeftNoZero = ticksLeft > 0? ticksLeft: 1;
             IStandPower power = IStandPower.getStandPowerOptional(living).orElse(null);
             living.getCapability(TimeStopUtilCapProvider.CAPABILITY).ifPresent(cap -> {
@@ -169,7 +153,7 @@ public class GameplayEventHandler {
                 float rotDifferenceDistance = (float) Math.sqrt(Math.pow(living.getRotationVector().x - cap.getCastRotation().x, 2) + Math.pow(living.getRotationVector().y - cap.getCastRotation().y, 2));
                 float differenceDistance = (float) Math.sqrt(Math.pow(difference.x, 2) + Math.pow(difference.y, 2) + Math.pow(difference.z, 2));
                 if (differenceDistance <= 2.5F && rotDifferenceDistance <= 15) {
-                    power.getResolveCounter().addResolveValue((0.5F * (2.5F - differenceDistance) * (15 - rotDifferenceDistance)) / (float) Math.sqrt(power.getResolveCounter().getResolveValue()) * TheWorldTimeStop.getTimeStopTicks(power, ModStandsReInit.RE_THE_WORLD_TIME_STOP.get()) / ticksLeftNoZero, living);
+                    power.getResolveCounter().addResolveValue((0.5F * (2.5F - differenceDistance) * (15 - rotDifferenceDistance)) / (float) Math.sqrt(power.getResolveCounter().getBoostVisible(living)) * TheWorldTimeStop.getTimeStopTicks(power, ModStandsReInit.RE_THE_WORLD_TIME_STOP.get()) / ticksLeftNoZero, living);
                 }
             });
         }

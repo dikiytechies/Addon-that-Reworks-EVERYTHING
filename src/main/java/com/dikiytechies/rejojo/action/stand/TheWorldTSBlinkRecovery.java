@@ -9,6 +9,7 @@ import com.github.standobyte.jojo.action.stand.TimeStopInstant;
 import com.github.standobyte.jojo.capability.world.TimeStopHandler;
 import com.github.standobyte.jojo.capability.world.TimeStopInstance;
 import com.github.standobyte.jojo.entity.stand.StandEntity;
+import com.github.standobyte.jojo.init.power.stand.ModStandsInit;
 import com.github.standobyte.jojo.power.impl.stand.IStandPower;
 import com.github.standobyte.jojo.power.impl.stand.StandUtil;
 import com.github.standobyte.jojo.util.mc.MCUtil;
@@ -88,6 +89,12 @@ public class TheWorldTSBlinkRecovery extends StandAction {
                 userPower.getUser().moveTo(blinkPos.x, blinkPos.y, blinkPos.z);
             }
         }
+    }
+
+    @Override
+    public boolean isUnlocked(IStandPower power) {
+        if (power.getResolveLevel() >= 4 )return ModStandsReInit.RE_THE_WORLD_TS_PUNCH.get().isUnlocked(power);
+        return false;
     }
 
     @Override
