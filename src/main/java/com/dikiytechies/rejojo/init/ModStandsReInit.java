@@ -84,13 +84,13 @@ public class ModStandsReInit {
                     .autoSummonStand()
                     .noResolveUnlock()
                     .partsRequired(StandInstance.StandPart.MAIN_BODY, StandInstance.StandPart.ARMS)
-                    , STAR_PLATINUM_HEAVY_PUNCH, RE_STAR_PLATINUM_TIME_STOP_BLINK, ModSounds.STAR_PLATINUM_TIME_STOP_BLINK, RE_STAR_PLATINUM_TIME_STOP));
+                    , RE_STAR_PLATINUM_HEAVY_PUNCH, false, RE_STAR_PLATINUM_TIME_STOP_BLINK, ModSounds.STAR_PLATINUM_TIME_STOP_BLINK, RE_STAR_PLATINUM_TIME_STOP));
     public static final RegistryObject<StarPlatinumBlinkPunch> STAR_PLATINUM_UPPERCUT_BLINK = ACTIONS.register("star_platinum_uppercut_ts",
             () -> new StarPlatinumBlinkPunch(new StarPlatinumBlinkPunch.Builder()
                     .autoSummonStand()
                     .noResolveUnlock()
                     .partsRequired(StandInstance.StandPart.MAIN_BODY, StandInstance.StandPart.ARMS)
-            , STAR_PLATINUM_UPPERCUT, RE_STAR_PLATINUM_TIME_STOP_BLINK, ModSounds.STAR_PLATINUM_TIME_STOP_BLINK, RE_STAR_PLATINUM_TIME_STOP));
+            , RE_STAR_PLATINUM_UPPERCUT, true, RE_STAR_PLATINUM_TIME_STOP_BLINK, ModSounds.STAR_PLATINUM_TIME_STOP_BLINK, RE_STAR_PLATINUM_TIME_STOP));
 
     //
     public static final RegistryObject<TimeStop> RE_THE_WORLD_TIME_STOP = ACTIONS.register("the_world_time_stop",

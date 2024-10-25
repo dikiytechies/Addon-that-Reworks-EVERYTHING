@@ -22,7 +22,7 @@ public class ReStarPlatinumUppercut extends StarPlatinumUppercut {
 
     @Override
     protected Action<IStandPower> replaceAction(IStandPower power, ActionTarget target) {
-        if (power.getStandManifestation() != null && !(target.getEntity() instanceof Entity) && power.getUser().isShiftKeyDown()) {
+        if (power.getStandManifestation() != null && power.getUser().isShiftKeyDown()) {
             StandEntity stand = (StandEntity) power.getStandManifestation();
             if (stand.getCurrentTaskPhase().isPresent() && stand.getCurrentTaskPhase().get() == Phase.WINDUP) {
                 return ModStandsReInit.STAR_PLATINUM_UPPERCUT_BLINK.get();

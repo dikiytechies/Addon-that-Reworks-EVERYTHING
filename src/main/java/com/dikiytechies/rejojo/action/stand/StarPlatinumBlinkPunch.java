@@ -35,6 +35,7 @@ import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
@@ -46,23 +47,20 @@ public class StarPlatinumBlinkPunch extends StandEntityActionModifier implements
     Supplier<ReTimeStopInstant> starPlatinumTimeStopBlink;
     Supplier<TimeStop> timeStop;
     Supplier<SoundEvent> blinkSound;
+    boolean isFinisher;
     public StarPlatinumBlinkPunch(StandEntityActionModifier.Builder builder,
-                                  Supplier<StandEntityHeavyAttack> starPlatinumHeavyAttack, Supplier<ReTimeStopInstant> starPlatinumTimeStopBlink, @Nullable Supplier<SoundEvent> blinkSound, Supplier<TimeStop> timeStop) {
+                                  Supplier<StandEntityHeavyAttack> starPlatinumHeavyAttack, boolean isFinisher, Supplier<ReTimeStopInstant> starPlatinumTimeStopBlink, @Nullable Supplier<SoundEvent> blinkSound, Supplier<TimeStop> timeStop) {
         super(builder);
         this.starPlatinumHeavyAttack = starPlatinumHeavyAttack;
         this.starPlatinumTimeStopBlink = starPlatinumTimeStopBlink;
         this.blinkSound = blinkSound;
         this.timeStop = timeStop;
-    }
-
-    public StandAction getParent() {
-        return starPlatinumHeavyAttack.get();
+        this.isFinisher = isFinisher;
     }
 
     @Override
     protected ActionConditionResult checkSpecificConditions(LivingEntity user, IStandPower power, ActionTarget target) {
         if (power.getCooldowns().isOnCooldown(starPlatinumTimeStopBlink.get())) return ActionConditionResult.NEGATIVE;
-        System.out.println(target);
         return ActionConditionResult.POSITIVE;
     }
 
@@ -70,11 +68,14 @@ public class StarPlatinumBlinkPunch extends StandEntityActionModifier implements
     public boolean isUnlocked(IStandPower power) {
         return ModStandsReInit.RE_STAR_PLATINUM_TIME_STOP.get().isUnlocked(power);
     }
-    //FIXME fix server crash upon getting target
+//FIXME target out of range after blink
     @Override
     public void standPerform(World world, StandEntity stand, IStandPower power, StandEntityTask task) {
-        blink(world, power.getUser(), power, task.getTarget());
-        stand.punch(task, starPlatinumHeavyAttack.get(), task.getTarget());
+        System.out.println(isFinisher);
+        if (!world.isClientSide()) {
+            blink(world, power.getUser(), power, task.getTarget());
+            stand.punch(task, starPlatinumHeavyAttack.get(), task.getTarget());
+        }
     }
 //code stealing:
     private void blink(World world, LivingEntity user, IStandPower power, ActionTarget target) {
@@ -106,15 +107,14 @@ public class StarPlatinumBlinkPunch extends StandEntityActionModifier implements
         skipTicksForStandAndUser(power, impliedTicks);
 
         if (!world.isClientSide()) {
-            power.consumeStamina(impliedTicks * getStaminaCostTicking(power));
+            power.consumeStamina(impliedTicks * starPlatinumTimeStopBlink.get().getStaminaCostTicking(power));
             BlockPos blockPos = new BlockPos(blinkPos);
-            while (user.level.getBlockState(new BlockPos(blinkPos)).getBlock() != Blocks.AIR) {
+            while (user.level.getBlockState(new BlockPos(blockPos)).getBlock() != Blocks.AIR && user.level.getBlockState(new BlockPos(blockPos)).getBlock() != Blocks.VOID_AIR) {
                 blockPos = blockPos.above();
             }
             while (user.level.isEmptyBlock(blockPos.below()) && blockPos.getY() > 0) {
                 blockPos = blockPos.below();
             }
-            Vector3d blinkPosition = new Vector3d(blinkPos.x, blockPos.getY() > 0 ? blockPos.getY() : user.position().y, blinkPos.z);
             playSound(world, power.getUser());
             power.getUser().moveTo(blinkPos.x, blinkPos.y, blinkPos.z);
 
@@ -138,7 +138,7 @@ public class StarPlatinumBlinkPunch extends StandEntityActionModifier implements
         if (blinkSound != null) {
             SoundEvent sound = blinkSound.get();
             if (sound != null) {
-                MCUtil.playSound(world, entity instanceof PlayerEntity ? (PlayerEntity) entity : null, entity.getX(), entity.getY(), entity.getZ(),
+                MCUtil.playSound(world, null, entity.getX(), entity.getY(), entity.getZ(),
                         sound, SoundCategory.AMBIENT, 5.0F, 1.0F, TimeStopHandler::canPlayerSeeInStoppedTime);
             }
         }

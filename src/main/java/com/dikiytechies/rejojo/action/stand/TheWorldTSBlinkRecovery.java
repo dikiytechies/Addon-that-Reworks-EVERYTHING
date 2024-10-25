@@ -70,7 +70,7 @@ public class TheWorldTSBlinkRecovery extends StandAction {
             userPower.setCooldownTimer(theWorldTimeStopBlink.get(), (int) (cooldown * TimeStopInstant.COOLDOWN_RATIO * (Math.pow(userPower.getResolveRatio(), 2) * -90 + 105) * 9 / 22.5F));
 
             ReTimeStopInstant.skipTicksForStandAndUser(userPower, impliedTicks);
-            userPower.consumeStamina(impliedTicks * getStaminaCostTicking(userPower));
+            userPower.consumeStamina(impliedTicks * theWorldTimeStopBlink.get().getStaminaCostTicking(userPower) + theWorldTimeStopBlink.get().getStaminaCost(userPower));
             Vector3d relativePosition = standEntity.getDefaultOffsetFromUser().getAbsoluteVec(userPower.getUser().getRotationVector().y, userPower.getUser().getRotationVector().x, standEntity, userPower.getUser(), standEntity.getDefaultOffsetFromUser().y);
             if (!userPower.getUser().isShiftKeyDown()) {
                 playSound(world, standEntity);
@@ -78,7 +78,7 @@ public class TheWorldTSBlinkRecovery extends StandAction {
             } else {
                 Vector3d pos = new Vector3d(standEntity.getX(), standEntity.getY(), standEntity.getZ());
                 BlockPos blockPos = new BlockPos(pos);
-                while (user.level.getBlockState(blockPos).getBlock() != Blocks.AIR) {
+                while (user.level.getBlockState(blockPos).getBlock() != Blocks.AIR && user.level.getBlockState(new BlockPos(blockPos)).getBlock() != Blocks.VOID_AIR) {
                     blockPos = blockPos.above();
                 }
                 while (user.level.isEmptyBlock(blockPos.below()) && blockPos.getY() > 0) {

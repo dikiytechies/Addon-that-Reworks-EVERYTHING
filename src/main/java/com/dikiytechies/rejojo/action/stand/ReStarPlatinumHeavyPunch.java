@@ -29,7 +29,7 @@ public class ReStarPlatinumHeavyPunch extends StandEntityHeavyAttack {
     @Nullable
     @Override
     protected Action<IStandPower> replaceAction(IStandPower power, ActionTarget target) {
-        if (power.getStandManifestation() != null && target.getType() == ActionTarget.TargetType.EMPTY && power.getUser().isShiftKeyDown()) {
+        if (power.getStandManifestation() != null && power.getUser().isShiftKeyDown() && ((StandEntity)power.getStandManifestation()).getCurrentTaskAction() != ModStandsReInit.RE_STAR_PLATINUM_UPPERCUT.get()) {
             StandEntity stand = (StandEntity) power.getStandManifestation();
             if (stand.getCurrentTaskPhase().isPresent() && stand.getCurrentTaskPhase().get() == StandEntityAction.Phase.WINDUP) {
                 return ModStandsReInit.STAR_PLATINUM_HEAVY_PUNCH_BLINK.get();
