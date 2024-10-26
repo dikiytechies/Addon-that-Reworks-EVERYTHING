@@ -9,7 +9,6 @@ import com.github.standobyte.jojo.action.stand.TimeStopInstant;
 import com.github.standobyte.jojo.capability.world.TimeStopHandler;
 import com.github.standobyte.jojo.capability.world.TimeStopInstance;
 import com.github.standobyte.jojo.entity.stand.StandEntity;
-import com.github.standobyte.jojo.init.power.stand.ModStandsInit;
 import com.github.standobyte.jojo.power.impl.stand.IStandPower;
 import com.github.standobyte.jojo.power.impl.stand.StandUtil;
 import com.github.standobyte.jojo.util.mc.MCUtil;

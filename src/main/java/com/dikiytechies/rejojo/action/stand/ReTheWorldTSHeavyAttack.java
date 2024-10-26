@@ -18,7 +18,6 @@ import com.github.standobyte.jojo.entity.stand.StandEntityTask;
 import com.github.standobyte.jojo.entity.stand.StandPose;
 import com.github.standobyte.jojo.entity.stand.StandStatFormulas;
 import com.github.standobyte.jojo.init.ModSounds;
-import com.github.standobyte.jojo.init.power.stand.ModStandsInit;
 import com.github.standobyte.jojo.network.PacketManager;
 import com.github.standobyte.jojo.network.packets.fromserver.TrDirectEntityPosPacket;
 import com.github.standobyte.jojo.power.impl.stand.IStandPower;
@@ -43,8 +42,6 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 import java.util.function.Supplier;
-
-import static com.github.standobyte.jojo.init.power.stand.ModStandsInit.STAR_PLATINUM_TIME_STOP;
 
 public class ReTheWorldTSHeavyAttack extends StandEntityAction implements IHasStandPunch {
     public static final StandPose TS_PUNCH_POSE = new StandPose("TS_PUNCH");

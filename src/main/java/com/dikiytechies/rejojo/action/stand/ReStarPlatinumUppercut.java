@@ -7,14 +7,12 @@ import com.github.standobyte.jojo.action.stand.StarPlatinumUppercut;
 import com.github.standobyte.jojo.entity.stand.StandEntity;
 import com.github.standobyte.jojo.power.impl.stand.IStandPower;
 import com.github.standobyte.jojo.util.mod.JojoModUtil;
-import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
 import javax.annotation.Nullable;
 
-import static com.github.standobyte.jojo.init.power.stand.ModStandsInit.STAR_PLATINUM_HEAVY_PUNCH;
 import static com.github.standobyte.jojo.init.power.stand.ModStandsInit.STAR_PLATINUM_UPPERCUT;
 
 public class ReStarPlatinumUppercut extends StarPlatinumUppercut {
