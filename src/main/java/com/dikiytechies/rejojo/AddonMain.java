@@ -2,6 +2,7 @@ package com.dikiytechies.rejojo;
 
 import com.dikiytechies.rejojo.capability.CapabilityHandler;
 import com.dikiytechies.rejojo.init.ModStandsReInit;
+import com.dikiytechies.rejojo.init.StatusEffects;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -21,6 +22,7 @@ public class AddonMain {
 
         ModStandsReInit.loadRegistryObjects();
         ModStandsReInit.ACTIONS.register(modEventBus);
+        StatusEffects.EFFECTS.register(modEventBus);
         modEventBus.addListener(this::onFMLCommonSetup);
     }
 

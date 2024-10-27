@@ -2,44 +2,30 @@ package com.dikiytechies.rejojo.util;
 
 import com.dikiytechies.rejojo.AddonMain;
 import com.dikiytechies.rejojo.action.stand.ReTheWorldTimeStop;
-import com.dikiytechies.rejojo.action.stand.ReTimeStop;
 import com.dikiytechies.rejojo.capability.TimeStopUtilCapProvider;
 import com.dikiytechies.rejojo.init.ModStandsReInit;
+import com.dikiytechies.rejojo.init.StatusEffects;
 import com.github.standobyte.jojo.JojoModConfig;
 import com.github.standobyte.jojo.action.stand.StandAction;
 import com.github.standobyte.jojo.action.stand.TheWorldTimeStop;
-import com.github.standobyte.jojo.action.stand.TimeStop;
 import com.github.standobyte.jojo.capability.world.TimeStopHandler;
 import com.github.standobyte.jojo.capability.world.TimeStopInstance;
-import com.github.standobyte.jojo.entity.stand.StandEntity;
 import com.github.standobyte.jojo.init.ModStatusEffects;
 import com.github.standobyte.jojo.init.power.stand.ModStands;
-import com.github.standobyte.jojo.item.KnifeItem;
-import com.github.standobyte.jojo.item.RoadRollerItem;
 import com.github.standobyte.jojo.power.impl.stand.IStandPower;
-import com.github.standobyte.jojo.power.impl.stand.StandPower;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.AbstractArrowEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Effect;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.vector.Vector2f;
 import net.minecraft.util.math.vector.Vector3d;
-import net.minecraftforge.event.entity.item.ItemEvent;
-import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.PotionEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-
-import java.util.Objects;
 
 @Mod.EventBusSubscriber(modid = AddonMain.MOD_ID)
 public class GameplayEventHandler {
@@ -156,6 +142,24 @@ public class GameplayEventHandler {
                     power.getResolveCounter().addResolveValue((0.5F * (2.5F - differenceDistance) * (15 - rotDifferenceDistance)) / (float) Math.sqrt(power.getResolveCounter().getBoostVisible(living)) * TheWorldTimeStop.getTimeStopTicks(power, ModStandsReInit.RE_THE_WORLD_TIME_STOP.get()) / ticksLeftNoZero, living);
                 }
             });
+        }
+    }
+    @SubscribeEvent(priority = EventPriority.LOW)
+    public static void onPotionAdded(PotionEvent.PotionAddedEvent event) {
+        Entity entity = event.getEntity();
+        EffectInstance effectInstance = event.getPotionEffect();
+        if (effectInstance.getEffect() == StatusEffects.SLOWBURN.get()) {
+            int ticksBack = effectInstance.getAmplifier() < 6? effectInstance.getDuration() / 20 / (7 - effectInstance.getAmplifier()): 0;
+            entity.setRemainingFireTicks(Math.max(entity.getRemainingFireTicks(), effectInstance.getDuration() + ticksBack));
+        }
+    }
+    @SubscribeEvent(priority = EventPriority.LOW)
+    public static void onLivingTick(LivingEvent.LivingUpdateEvent event) {
+        LivingEntity entity = event.getEntityLiving();
+        if (!entity.level.isClientSide()) {
+            if (entity.getEffect(StatusEffects.SLOWBURN.get()) != null && entity.getRemainingFireTicks() <= 0) {
+                entity.removeEffect(StatusEffects.SLOWBURN.get());
+            }
         }
     }
 }

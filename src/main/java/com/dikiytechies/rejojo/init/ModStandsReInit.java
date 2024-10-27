@@ -6,7 +6,6 @@ import com.github.standobyte.jojo.JojoMod;
 import com.github.standobyte.jojo.action.Action;
 import com.github.standobyte.jojo.action.stand.*;
 import com.github.standobyte.jojo.init.ModSounds;
-import com.github.standobyte.jojo.init.power.stand.ModStandsInit;
 import com.github.standobyte.jojo.power.impl.stand.StandInstance;
 import com.github.standobyte.jojo.power.impl.stand.type.StandType;
 import net.minecraft.util.ResourceLocation;
@@ -20,9 +19,8 @@ import net.minecraftforge.registries.DeferredRegister;
 import javax.annotation.Nonnull;
 import java.lang.reflect.Field;
 
-import static com.github.standobyte.jojo.init.power.ModCommonRegisters.ACTIONS;
-import static com.github.standobyte.jojo.init.power.stand.ModStands.STAR_PLATINUM;
-import static com.github.standobyte.jojo.init.power.stand.ModStands.THE_WORLD;
+import static com.github.standobyte.jojo.init.ModSounds.MAGICIANS_RED_PUNCH_LIGHT;
+import static com.github.standobyte.jojo.init.power.stand.ModStands.*;
 import static com.github.standobyte.jojo.init.power.stand.ModStandsInit.*;
 
 public class ModStandsReInit {
@@ -129,6 +127,21 @@ public class ModStandsReInit {
     public static final RegistryObject<StandAction> THE_WORLD_TS_BLINK_RECOVERY = ACTIONS.register("the_world_ts_blink_recovery",
             () -> new TheWorldTSBlinkRecovery(new StandAction.Builder()
                     .noResolveUnlock().partsRequired(StandInstance.StandPart.MAIN_BODY), RE_THE_WORLD_TIME_STOP_BLINK, RE_THE_WORLD_TS_PUNCH));
+//
+    public static final RegistryObject<StandAction> RE_MAGICIANS_RED_PUNCH = ACTIONS.register("magicians_red_punch",
+        () -> new ReMagiciansRedLightAttack(new StandEntityLightAttack.Builder()
+                .punchSound(MAGICIANS_RED_PUNCH_LIGHT)));
+
+    public static final RegistryObject<StandEntityHeavyAttack> RE_MAGICIANS_RED_KICK = ACTIONS.register("magicians_red_kick",
+            () -> new ReMagiciansRedKick(new StandEntityHeavyAttack.Builder()
+                    .punchSound(ModSounds.MAGICIANS_RED_KICK_HEAVY)
+                    .partsRequired(StandInstance.StandPart.LEGS)));
+    public static final RegistryObject<StandEntityHeavyAttack> RE_MAGICIANS_RED_HEAVY_PUNCH = ACTIONS.register("magicians_red_heavy_punch",
+            () -> new ReMagiciansRedHeavyPunch(new StandEntityHeavyAttack.Builder()
+                    .punchSound(ModSounds.MAGICIANS_RED_PUNCH_HEAVY)
+                    .partsRequired(StandInstance.StandPart.ARMS)
+                    .setFinisherVariation(RE_MAGICIANS_RED_KICK)
+                    .shiftVariationOf(RE_MAGICIANS_RED_PUNCH)));
 
     @Mod.EventBusSubscriber(modid = AddonMain.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
     public static class NehuyRegister {
@@ -139,9 +152,11 @@ public class ModStandsReInit {
         public static void afterStandsRegister(@Nonnull RegistryEvent.Register<StandType<?>> event) {
             StandType<?> star_platinum = STAR_PLATINUM.getStandType();
             StandType<?> the_world = THE_WORLD.getStandType();
+            StandType<?> magicians_red = MAGICIANS_RED.getStandType();
             try {
                 initSP(star_platinum);
                 initTW(the_world);
+                initMR(magicians_red);
             } catch (IllegalArgumentException | IllegalAccessException e) {
                 e.printStackTrace();
                 throw new RuntimeException(e);
@@ -195,6 +210,25 @@ public class ModStandsReInit {
             }
             STAND_TYPE_RMB_HOTBAR.set(the_world, edited);
             STAND_TYPE_LMB_HOTBAR.set(the_world, editedL);
+        }
+
+        public static void initMR(StandType<?> magicians_red) throws IllegalAccessException {
+            StandAction[] rightClickHotbar = (StandAction[]) STAND_TYPE_RMB_HOTBAR.get(magicians_red);
+            StandAction[] leftClickHotbar = (StandAction[]) STAND_TYPE_LMB_HOTBAR.get(magicians_red);
+            StandAction[] edited = new StandAction[rightClickHotbar.length];
+            StandAction[] editedL = new StandAction[leftClickHotbar.length];
+            for (int i = 0; i < leftClickHotbar.length; i++) {
+                if (leftClickHotbar[i] == MAGICIANS_RED_PUNCH.get()) {
+                    editedL[i] = RE_MAGICIANS_RED_PUNCH.get();
+                } else {
+                    editedL[i] = leftClickHotbar[i];
+                }
+            }
+            for (int i = 0; i < rightClickHotbar.length; i++) {
+                edited[i] = rightClickHotbar[i];
+            }
+            STAND_TYPE_RMB_HOTBAR.set(magicians_red, edited);
+            STAND_TYPE_LMB_HOTBAR.set(magicians_red, editedL);
         }
 
         private static Field getField(Class<?> clazz, String fieldName) {
