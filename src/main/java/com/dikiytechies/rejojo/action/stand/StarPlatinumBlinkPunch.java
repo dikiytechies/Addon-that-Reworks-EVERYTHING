@@ -61,17 +61,22 @@ public class StarPlatinumBlinkPunch extends StandEntityActionModifier implements
     public boolean isUnlocked(IStandPower power) {
         return ModStandsReInit.RE_STAR_PLATINUM_TIME_STOP.get().isUnlocked(power);
     }
-//FIXME target out of range after blink
     @Override
     public void standPerform(World world, StandEntity stand, IStandPower power, StandEntityTask task) {
         if (!world.isClientSide()) {
             RayTraceResult rayTrace = JojoModUtil.rayTrace(power.getUser(), starPlatinumTimeStopBlink.get().getMaxDistance(power.getUser(), power, power.getUser().getSpeed(), starPlatinumTimeStopBlink.get().getMaxImpliedTicks(power)),
                     entity -> entity instanceof LivingEntity && !(entity instanceof StandEntity && ((StandEntity) entity).getUser() == power.getUser()));
             blink(world, power.getUser(), power, task.getTarget());
-            power.getUser().getViewVector(1);
-            stand.punch(task, starPlatinumHeavyAttack.get(), task.getTarget());
+            stand.setTaskTarget(ActionTarget.fromRayTraceResult(rayTrace));
+            System.out.println(stand.getCurrentTask().get().getTarget());
+            if (!stand.isManuallyControlled()) {
+                stand.attackTarget(task.getTarget(), starPlatinumHeavyAttack.get(), task);
+            } else {
+                stand.punch(task, starPlatinumHeavyAttack.get(), task.getTarget());
+            }
         }
     }
+
     //code stealing:
     private void blink(World world, LivingEntity user, IStandPower power, ActionTarget target) {
         LivingEntity performer;
@@ -116,11 +121,17 @@ public class StarPlatinumBlinkPunch extends StandEntityActionModifier implements
             while (user.level.isEmptyBlock(blockPos.below()) && blockPos.getY() > 0) {
                 blockPos = blockPos.below();
             }
-            performer.moveTo(blinkPos.x, blinkPos.y, blinkPos.z);
+            performer.moveTo(blockPos.getX(), blockPos.getY(), blockPos.getZ());
 
-            performer.teleportTo(blinkPos.x, blinkPos.y, blinkPos.z);
+            performer.teleportTo(blockPos.getX(), blockPos.getY(), blockPos.getZ());
 
-            System.out.println(blinkPos.x + " " + blinkPos.y + " " + blinkPos.z);
+            if (performer == user && ((StandEntity) power.getStandManifestation()).isManuallyControlled()) {
+                ((StandEntity) power.getStandManifestation()).setManualControl(false, false);
+                ((StandEntity) power.getStandManifestation()).moveTo(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+                ((StandEntity) power.getStandManifestation()).teleportTo(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+            }
+
+            System.out.println(blockPos.getX() + " " + blockPos.getY() + " " + blockPos.getZ());
 
             float learning = timeStop.get().timeStopLearningPerTick * impliedTicks;
            power.addLearningProgressPoints(timeStop.get(), learning);
