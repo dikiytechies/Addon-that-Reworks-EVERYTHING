@@ -2,7 +2,11 @@ package com.dikiytechies.rejojo.util;
 
 import com.dikiytechies.rejojo.AddonMain;
 import com.dikiytechies.rejojo.action.stand.ReTheWorldTimeStop;
+import com.dikiytechies.rejojo.capability.CapabilityHandler;
+import com.dikiytechies.rejojo.capability.LivingUtilCap;
+import com.dikiytechies.rejojo.capability.LivingUtilCapProvider;
 import com.dikiytechies.rejojo.capability.TimeStopUtilCapProvider;
+import com.dikiytechies.rejojo.config.GlobalConfig;
 import com.dikiytechies.rejojo.init.ModStandsReInit;
 import com.dikiytechies.rejojo.init.StatusEffects;
 import com.github.standobyte.jojo.JojoModConfig;
@@ -32,7 +36,7 @@ public class GameplayEventHandler {
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void tick(LivingEvent.LivingUpdateEvent event) {
         getTimeStop(event);
-        addTWResolveInTS(event);
+        if (GlobalConfig.enableTSResolve(event.getEntityLiving().level.isClientSide())) addTWResolveInTS(event);
     }
 
     private static void getTimeStop(LivingEvent.LivingUpdateEvent event) {
@@ -100,6 +104,7 @@ public class GameplayEventHandler {
         LivingEntity entityLiving = event.getEntityLiving();
         if (!entityLiving.level.isClientSide()) {
             if (IStandPower.getStandPowerOptional(entityLiving).isPresent()) {
+                if (TheWorldTimeStop.getTimeStopTicks(IStandPower.getStandPowerOptional(entityLiving).orElse(null), ModStandsReInit.RE_THE_WORLD_TIME_STOP.get()) < 50) return;
                 IStandPower power = IStandPower.getStandPowerOptional(entityLiving).orElse(null);
                 Iterable<StandAction> actions = power.getAllUnlockedActions();
                 for (StandAction action : actions) {
@@ -117,15 +122,19 @@ public class GameplayEventHandler {
     }
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void onUserTSEnd(PotionEvent.PotionExpiryEvent event) {
-        if (!event.getEntityLiving().level.isClientSide() && event.getPotionEffect() != null) {
-            giveResolveFromTSPosition(event.getEntityLiving(), event.getPotionEffect().getEffect(), 0, true);
+        if (GlobalConfig.enableTSResolve(event.getEntityLiving().level.isClientSide())) {
+            if (!event.getEntityLiving().level.isClientSide() && event.getPotionEffect() != null) {
+                giveResolveFromTSPosition(event.getEntityLiving(), event.getPotionEffect().getEffect(), 0, true);
+            }
         }
     }
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void onUserTSCancel(PotionEvent.PotionRemoveEvent event) {
         //copy 'n paste
-        if (!event.getEntityLiving().level.isClientSide() && event.getPotionEffect() != null) {
-            giveResolveFromTSPosition(event.getEntityLiving(), event.getPotionEffect().getEffect(), event.getPotionEffect().getDuration(), false);
+        if (GlobalConfig.enableTSResolve(event.getEntityLiving().level.isClientSide())) {
+            if (!event.getEntityLiving().level.isClientSide() && event.getPotionEffect() != null) {
+                giveResolveFromTSPosition(event.getEntityLiving(), event.getPotionEffect().getEffect(), event.getPotionEffect().getDuration(), false);
+            }
         }
     }
     private static void giveResolveFromTSPosition(LivingEntity living, Effect effect, int ticksLeft, boolean expired) {
@@ -154,11 +163,18 @@ public class GameplayEventHandler {
         }
     }
     @SubscribeEvent(priority = EventPriority.LOW)
+    public static void onPotionExpired(PotionEvent.PotionExpiryEvent event) {
+        LivingEntity entityLiving = event.getEntityLiving();
+        EffectInstance effectInstance = event.getPotionEffect();
+        if (effectInstance.getEffect() == StatusEffects.SLOWBURN.get()) entityLiving.getCapability(LivingUtilCapProvider.CAPABILITY).ifPresent(cap -> cap.setHeat(0));
+    }
+    @SubscribeEvent(priority = EventPriority.LOW)
     public static void onLivingTick(LivingEvent.LivingUpdateEvent event) {
         LivingEntity entity = event.getEntityLiving();
         if (!entity.level.isClientSide()) {
             if (entity.getEffect(StatusEffects.SLOWBURN.get()) != null && entity.getRemainingFireTicks() <= 0) {
                 entity.removeEffect(StatusEffects.SLOWBURN.get());
+                entity.getCapability(LivingUtilCapProvider.CAPABILITY).ifPresent(cap -> cap.setHeat(0));
             }
         }
     }

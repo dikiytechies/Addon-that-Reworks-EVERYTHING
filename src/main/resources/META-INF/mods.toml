@@ -29,7 +29,7 @@ displayName="Ripples of the Past Reworked" #mandatory
 # A file name (in the root of the mod JAR) containing a logo for display
 logoFile="logo.png" #optional
 # A text field displayed in the mod UI
-credits="StandoByte, " #optional
+credits="StandoByte, we3v1r for skibidi rizzing" #optional
 # A text field displayed in the mod UI
 authors="dikiytechies" #optional
 # The description text for the mod (multi line!) (#mandatory)

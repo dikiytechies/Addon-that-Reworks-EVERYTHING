@@ -2,5 +2,7 @@
   "action.rejojo.the_world_ts_blink_recovery": "Возврат стенда",
 
   "action.rejojo.star_platinum_heavy_punch_ts": "Быстрый удар",
-  "action.rejojo.star_platinum_uppercut_ts": "Быстрый апперкот"
+  "action.rejojo.star_platinum_uppercut_ts": "Быстрый апперкот",
+
+  "effect.rejojo.slowburn": "Ожог"
 }

@@ -4,8 +4,9 @@
   "refmap": "mixins.rejojo.refmap.json",
   "minVersion": "0.8",
   "mixins": [
-    "TheWorldEntityMixin",
+    "MRFlameEntityMixin",
     "RoadRollerItemMixin",
+    "TheWorldEntityMixin",
     "TimeStopInstanceMixin"
   ],
   "client": [
