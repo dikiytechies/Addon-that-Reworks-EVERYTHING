@@ -53,7 +53,7 @@ public class StarPlatinumBlinkPunch extends StandEntityActionModifier implements
 
     @Override
     protected ActionConditionResult checkSpecificConditions(LivingEntity user, IStandPower power, ActionTarget target) {
-        if (power.getCooldowns().isOnCooldown(starPlatinumTimeStopBlink.get())) return ActionConditionResult.NEGATIVE;
+        if (power.getCooldowns().isOnCooldown(starPlatinumTimeStopBlink.get()) || TimeStopHandler.isTimeStopped(user.level, user.blockPosition())) return ActionConditionResult.NEGATIVE;
         return ActionConditionResult.POSITIVE;
     }
 
