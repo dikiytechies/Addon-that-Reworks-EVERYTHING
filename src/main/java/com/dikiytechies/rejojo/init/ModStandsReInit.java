@@ -130,6 +130,7 @@ public class ModStandsReInit {
 //
     public static final RegistryObject<StandAction> RE_MAGICIANS_RED_PUNCH = ACTIONS.register("magicians_red_punch",
         () -> new ReMagiciansRedLightAttack(new StandEntityLightAttack.Builder()
+                .isTrained()
                 .punchSound(MAGICIANS_RED_PUNCH_LIGHT)));
 
     public static final RegistryObject<StandEntityHeavyAttack> RE_MAGICIANS_RED_KICK = ACTIONS.register("magicians_red_kick",
@@ -142,6 +143,12 @@ public class ModStandsReInit {
                     .partsRequired(StandInstance.StandPart.ARMS)
                     .setFinisherVariation(RE_MAGICIANS_RED_KICK)
                     .shiftVariationOf(RE_MAGICIANS_RED_PUNCH)));
+    public static final RegistryObject<StandAction> RE_MAGICIANS_RED_FLAME_BURST = ACTIONS.register("magicians_red_flame_burst",
+            () -> new ReMagiciansRedFlameBurst(new StandEntityAction.Builder().holdType()
+                    .staminaCostTick(3)
+                    .noResolveUnlock()
+                    .standOffsetFront().standPose(MagiciansRedFlameBurst.FLAME_BURST_POSE)
+                    .partsRequired(StandInstance.StandPart.MAIN_BODY)));
 
     @Mod.EventBusSubscriber(modid = AddonMain.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
     public static class NehuyRegister {
@@ -213,21 +220,17 @@ public class ModStandsReInit {
         }
 
         public static void initMR(StandType<?> magicians_red) throws IllegalAccessException {
-            StandAction[] rightClickHotbar = (StandAction[]) STAND_TYPE_RMB_HOTBAR.get(magicians_red);
             StandAction[] leftClickHotbar = (StandAction[]) STAND_TYPE_LMB_HOTBAR.get(magicians_red);
-            StandAction[] edited = new StandAction[rightClickHotbar.length];
             StandAction[] editedL = new StandAction[leftClickHotbar.length];
             for (int i = 0; i < leftClickHotbar.length; i++) {
                 if (leftClickHotbar[i] == MAGICIANS_RED_PUNCH.get()) {
                     editedL[i] = RE_MAGICIANS_RED_PUNCH.get();
+                } else if (leftClickHotbar[i] == MAGICIANS_RED_FLAME_BURST.get()) {
+                    editedL[i] = RE_MAGICIANS_RED_FLAME_BURST.get();
                 } else {
                     editedL[i] = leftClickHotbar[i];
                 }
             }
-            for (int i = 0; i < rightClickHotbar.length; i++) {
-                edited[i] = rightClickHotbar[i];
-            }
-            STAND_TYPE_RMB_HOTBAR.set(magicians_red, edited);
             STAND_TYPE_LMB_HOTBAR.set(magicians_red, editedL);
         }
 

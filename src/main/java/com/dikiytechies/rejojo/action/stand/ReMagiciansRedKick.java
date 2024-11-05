@@ -34,10 +34,12 @@ public class ReMagiciansRedKick extends MagiciansRedKick {
                     float burnTickDamage = target.getEffect(StatusEffects.SLOWBURN.get()).getAmplifier() < 6 ? 1.0f / (target.getEffect(StatusEffects.SLOWBURN.get()).getAmplifier() + 1) : target.getEffect(StatusEffects.SLOWBURN.get()).getAmplifier() > 6 ? target.getEffect(StatusEffects.SLOWBURN.get()).getAmplifier() - 6 : 1;
                     target.hurt(new DamageSource("onFire").bypassArmor(), (float) target.getEffect(StatusEffects.SLOWBURN.get()).getDuration() / 20 * burnTickDamage);
                     target.clearFire();
+                    userPower.addLearningProgressPoints(this, getMaxTrainingPoints(userPower) / 40 * (target.getEffect(StatusEffects.SLOWBURN.get()).getAmplifier() + 1));
                     target.removeEffect(StatusEffects.SLOWBURN.get());
                 }
             } else {
                 target.addEffect(new EffectInstance(StatusEffects.SLOWBURN.get(), 15 * 20, 6, false, false, true));
+                userPower.addLearningProgressPoints(this, getMaxTrainingPoints(userPower) / 40 * 6);
             }
         }
     }

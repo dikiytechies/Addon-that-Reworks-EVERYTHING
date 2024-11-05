@@ -1,5 +1,6 @@
 package com.dikiytechies.rejojo.action.stand;
 
+import com.dikiytechies.rejojo.init.ModStandsReInit;
 import com.dikiytechies.rejojo.init.StatusEffects;
 import com.github.standobyte.jojo.action.stand.StandEntityLightAttack;
 import com.github.standobyte.jojo.entity.stand.StandEntity;
@@ -30,8 +31,15 @@ public class ReMagiciansRedLightAttack extends StandEntityLightAttack {
             targetEntity.addEffect(new EffectInstance(StatusEffects.SLOWBURN.get(), 200,
                     targetEntity.getEffect(StatusEffects.SLOWBURN.get()) != null? targetEntity.getEffect(StatusEffects.SLOWBURN.get()).getAmplifier() + 1: 0,
                     false, false, true));
+            userPower.addLearningProgressPoints(this, getMaxTrainingPoints(userPower) / 40);
         }
     }
+
+    @Override
+    public void onMaxTraining(IStandPower power) {
+        power.unlockAction(ModStandsReInit.RE_MAGICIANS_RED_FLAME_BURST.get());
+    }
+
     @Override
     public IFormattableTextComponent getTranslatedName(IStandPower power, String key) {
         String[] keys = key.split("rejojo");
