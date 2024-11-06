@@ -22,6 +22,7 @@ public class AddonMain {
     public AddonMain() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, AddonConfig.commonSpec);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, AddonConfig.clientSpec);
         ModStandsReInit.loadRegistryObjects();
         ModStandsReInit.ACTIONS.register(modEventBus);
         StatusEffects.EFFECTS.register(modEventBus);

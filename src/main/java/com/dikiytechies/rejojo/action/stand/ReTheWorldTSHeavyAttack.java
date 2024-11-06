@@ -1,5 +1,6 @@
 package com.dikiytechies.rejojo.action.stand;
 
+import com.dikiytechies.rejojo.config.ClientConfig;
 import com.dikiytechies.rejojo.init.ModStandsReInit;
 import com.github.standobyte.jojo.action.Action;
 import com.github.standobyte.jojo.action.ActionConditionResult;
@@ -42,6 +43,8 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 import java.util.function.Supplier;
+
+import static com.github.standobyte.jojo.init.power.stand.ModStandsInit.THE_WORLD_TS_PUNCH;
 
 public class ReTheWorldTSHeavyAttack extends StandEntityAction implements IHasStandPunch {
     public static final StandPose TS_PUNCH_POSE = new StandPose("TS_PUNCH");
@@ -256,10 +259,11 @@ public class ReTheWorldTSHeavyAttack extends StandEntityAction implements IHasSt
 
     @Override
     public ResourceLocation getIconTexturePath(@Nullable IStandPower power) {
+        String nameSpace = ClientConfig.isNewTSIconsEnabled()? this.getRegistryName().getNamespace(): THE_WORLD_TS_PUNCH.get().getRegistryName().getNamespace();
         if (power != null && doesBackshot(power)) {
-            return JojoModUtil.makeTextureLocation("action", this.getRegistryName().getNamespace(), this.getRegistryName().getPath() + "_back");
+            return JojoModUtil.makeTextureLocation("action", nameSpace, this.getRegistryName().getPath() + "_back");
         } else {
-            return JojoModUtil.makeTextureLocation("action", this.getRegistryName().getNamespace(), this.getRegistryName().getPath());
+            return JojoModUtil.makeTextureLocation("action", nameSpace, this.getRegistryName().getPath());
         }
     }
 

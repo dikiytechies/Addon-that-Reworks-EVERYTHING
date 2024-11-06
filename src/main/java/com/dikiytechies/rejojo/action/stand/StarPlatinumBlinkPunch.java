@@ -1,5 +1,6 @@
 package com.dikiytechies.rejojo.action.stand;
 
+import com.dikiytechies.rejojo.config.ClientConfig;
 import com.dikiytechies.rejojo.init.ModStandsReInit;
 import com.github.standobyte.jojo.action.ActionConditionResult;
 import com.github.standobyte.jojo.action.ActionTarget;
@@ -22,6 +23,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
@@ -34,6 +36,7 @@ import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
 import static com.github.standobyte.jojo.action.stand.TimeStopInstant.*;
+import static com.github.standobyte.jojo.init.power.stand.ModStandsInit.THE_WORLD_TIME_STOP;
 
 public class StarPlatinumBlinkPunch extends StandEntityActionModifier implements IHasStandPunch {
     Supplier<StandEntityHeavyAttack> starPlatinumHeavyAttack;
@@ -53,7 +56,7 @@ public class StarPlatinumBlinkPunch extends StandEntityActionModifier implements
 
     @Override
     protected ActionConditionResult checkSpecificConditions(LivingEntity user, IStandPower power, ActionTarget target) {
-        if (power.getCooldowns().isOnCooldown(starPlatinumTimeStopBlink.get()) || TimeStopHandler.isTimeStopped(user.level, user.blockPosition())) return ActionConditionResult.NEGATIVE;
+        if (power.getCooldowns().isOnCooldown(starPlatinumTimeStopBlink.get())) return ActionConditionResult.NEGATIVE;
         return ActionConditionResult.POSITIVE;
     }
 
@@ -145,6 +148,12 @@ public class StarPlatinumBlinkPunch extends StandEntityActionModifier implements
         }
 
         user.getCapability(LivingUtilCapProvider.CAPABILITY).ifPresent(cap -> cap.hasUsedTimeStopToday = true);
+    }
+
+    @Override
+    protected ResourceLocation getIconTexturePath(@Nullable IStandPower power) {
+        if (ClientConfig.isNewTSIconsEnabled()) return super.getIconTexturePath(power);
+        return JojoModUtil.makeTextureLocation("action", THE_WORLD_TIME_STOP.get().getRegistryName().getNamespace(), this.getRegistryName().getPath());
     }
 
     void playSound(World world, Entity entity) {

@@ -4,6 +4,7 @@ import com.dikiytechies.rejojo.init.ModStandsReInit;
 import com.github.standobyte.jojo.action.Action;
 import com.github.standobyte.jojo.action.ActionTarget;
 import com.github.standobyte.jojo.action.stand.StarPlatinumUppercut;
+import com.github.standobyte.jojo.capability.world.TimeStopHandler;
 import com.github.standobyte.jojo.entity.stand.StandEntity;
 import com.github.standobyte.jojo.power.impl.stand.IStandPower;
 import com.github.standobyte.jojo.util.mod.JojoModUtil;
@@ -20,7 +21,7 @@ public class ReStarPlatinumUppercut extends StarPlatinumUppercut {
 
     @Override
     protected Action<IStandPower> replaceAction(IStandPower power, ActionTarget target) {
-        if (power.getStandManifestation() != null && power.getUser().isShiftKeyDown()) {
+        if (power.getStandManifestation() != null && power.getUser().isShiftKeyDown() && !TimeStopHandler.isTimeStopped(power.getUser().level, power.getUser().blockPosition())) {
             StandEntity stand = (StandEntity) power.getStandManifestation();
             if (stand.getCurrentTaskPhase().isPresent() && stand.getCurrentTaskPhase().get() == Phase.WINDUP) {
                 return ModStandsReInit.STAR_PLATINUM_UPPERCUT_BLINK.get();

@@ -44,6 +44,7 @@ public class AddonConfig {
         final Pair<Client, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(Client::new);
         clientSpec = specPair.getRight();
         CLIENT = specPair.getLeft();
+
     }
 
     @SuppressWarnings("unused")
@@ -146,7 +147,14 @@ public class AddonConfig {
     }
 
     public static class Client {
+        public final ForgeConfigSpec.BooleanValue isNewTSIconsEnabled;
         private Client(ForgeConfigSpec.Builder builder) {
+            builder.push("Client config");
+            isNewTSIconsEnabled = builder.translation("rejojo.config.client.isNewTSIconsEbabled")
+                    .comment("  Determines if new time stop related icons are enabled",
+                            "   Default is to true.")
+                    .define("enableNewTSIcons", true);
+            builder.pop();
         }
     }
 }

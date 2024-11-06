@@ -2,15 +2,22 @@ package com.dikiytechies.rejojo.action.stand;
 
 import com.dikiytechies.rejojo.capability.TimeStopUtilCap;
 import com.dikiytechies.rejojo.capability.TimeStopUtilCapProvider;
+import com.dikiytechies.rejojo.config.ClientConfig;
 import com.github.standobyte.jojo.action.ActionTarget;
 import com.github.standobyte.jojo.action.config.ActionConfigField;
 import com.github.standobyte.jojo.action.stand.TheWorldTimeStop;
 import com.github.standobyte.jojo.action.stand.TimeStop;
 import com.github.standobyte.jojo.power.impl.stand.IStandPower;
+import com.github.standobyte.jojo.util.mod.JojoModUtil;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
+
+import javax.annotation.Nullable;
+
+import static com.github.standobyte.jojo.init.power.stand.ModStandsInit.THE_WORLD_TIME_STOP;
 
 public class ReTheWorldTimeStop extends TheWorldTimeStop {
     @ActionConfigField
@@ -50,6 +57,12 @@ public class ReTheWorldTimeStop extends TheWorldTimeStop {
             return new TranslationTextComponent(newKey);
         }
         return new TranslationTextComponent(key);
+    }
+
+    @Override
+    protected ResourceLocation getIconTexturePath(@Nullable IStandPower power) {
+        if (ClientConfig.isNewTSIconsEnabled()) return super.getIconTexturePath(power);
+        return JojoModUtil.makeTextureLocation("action", THE_WORLD_TIME_STOP.get().getRegistryName().getNamespace(), this.getRegistryName().getPath());
     }
 
     public static class Builder extends ReTimeStop.Builder {

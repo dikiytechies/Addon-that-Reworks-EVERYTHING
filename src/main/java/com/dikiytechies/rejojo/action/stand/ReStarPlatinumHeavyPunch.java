@@ -5,6 +5,7 @@ import com.github.standobyte.jojo.action.Action;
 import com.github.standobyte.jojo.action.ActionTarget;
 import com.github.standobyte.jojo.action.stand.StandEntityAction;
 import com.github.standobyte.jojo.action.stand.StandEntityHeavyAttack;
+import com.github.standobyte.jojo.capability.world.TimeStopHandler;
 import com.github.standobyte.jojo.entity.stand.StandEntity;
 import com.github.standobyte.jojo.power.impl.stand.IStandPower;
 import com.github.standobyte.jojo.util.mod.JojoModUtil;
@@ -24,7 +25,7 @@ public class ReStarPlatinumHeavyPunch extends StandEntityHeavyAttack {
     @Nullable
     @Override
     protected Action<IStandPower> replaceAction(IStandPower power, ActionTarget target) {
-        if (power.getStandManifestation() != null && power.getUser().isShiftKeyDown() && ((StandEntity)power.getStandManifestation()).getCurrentTaskAction() != ModStandsReInit.RE_STAR_PLATINUM_UPPERCUT.get()) {
+        if (power.getStandManifestation() != null && power.getUser().isShiftKeyDown() && ((StandEntity)power.getStandManifestation()).getCurrentTaskAction() != ModStandsReInit.RE_STAR_PLATINUM_UPPERCUT.get() && !TimeStopHandler.isTimeStopped(power.getUser().level, power.getUser().blockPosition())) {
             StandEntity stand = (StandEntity) power.getStandManifestation();
             if (stand.getCurrentTaskPhase().isPresent() && stand.getCurrentTaskPhase().get() == StandEntityAction.Phase.WINDUP) {
                 return ModStandsReInit.STAR_PLATINUM_HEAVY_PUNCH_BLINK.get();
