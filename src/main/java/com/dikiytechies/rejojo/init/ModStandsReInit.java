@@ -65,6 +65,7 @@ public class ModStandsReInit {
     public static final RegistryObject<StandEntityHeavyAttack> RE_STAR_PLATINUM_UPPERCUT = ACTIONS.register("star_platinum_uppercut",
             () -> new ReStarPlatinumUppercut(new StandEntityHeavyAttack.Builder()
                     .resolveLevelToUnlock(1)
+                    .standPose(StarPlatinumUppercut.UPPERCUT_POSE)
                     .punchSound(ModSounds.STAR_PLATINUM_PUNCH_HEAVY)
                     .standSound(StandEntityAction.Phase.WINDUP, false, ModSounds.STAR_PLATINUM_ORA_LONG)
                     .partsRequired(StandInstance.StandPart.ARMS)));
